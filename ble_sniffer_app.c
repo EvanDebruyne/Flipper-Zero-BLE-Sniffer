@@ -8,6 +8,18 @@
 
 #define TAG "BLE_Sniffer"
 
+// UART Configuration (placeholder for future implementation)
+#define BUFFER_SIZE 1024
+
+// BLE Packet Structure (from nRF Sniffer)
+typedef struct {
+    uint32_t timestamp;
+    uint8_t channel;
+    uint8_t rssi;
+    uint16_t packet_length;
+    uint8_t packet_data[255];
+} ble_packet_t;
+
 // App State
 typedef enum {
     BLE_SnifferStateIdle,
@@ -26,6 +38,11 @@ typedef struct {
     uint32_t packet_count;
     uint32_t file_count;
     
+    // UART
+    uint8_t uart_buffer[BUFFER_SIZE];
+    size_t uart_buffer_pos;
+    bool uart_data_ready;
+    
     // Storage
     Storage* storage;
     File* current_file;
@@ -35,6 +52,10 @@ typedef struct {
     char status_text[128];
     char info_text[128];
 } BLE_SnifferApp;
+
+// Forward declarations
+static void ble_sniffer_render_callback(Canvas* canvas, void* context);
+static void ble_sniffer_input_callback(InputEvent* input_event, void* context);
 
 // Render callback
 static void ble_sniffer_render_callback(Canvas* canvas, void* context) {
@@ -154,6 +175,11 @@ int32_t ble_sniffer_app(void* p) {
     view_port_input_callback_set(app->view_port, ble_sniffer_input_callback, app);
     gui_add_view_port(app->gui, app->view_port, GuiLayerFullscreen);
     
+    // Initialize UART (placeholder for future implementation)
+    app->uart_buffer_pos = 0;
+    app->uart_data_ready = false;
+    // TODO: Add UART initialization when SDK supports it
+    
     // Initial state
     app->state = BLE_SnifferStateIdle;
     app->is_connected = true; // Assume connected for now
@@ -168,6 +194,15 @@ int32_t ble_sniffer_app(void* p) {
             ble_sniffer_input_callback(&event, app);
         }
         
+        // Process UART data (placeholder for future implementation)
+        if(app->uart_data_ready && app->state == BLE_SnifferStateCapturing) {
+            // TODO: Parse actual BLE packets from nRF52840
+            // For now, just increment packet count when we receive data
+            app->packet_count++;
+            app->uart_buffer_pos = 0;
+            app->uart_data_ready = false;
+        }
+        
         // Check if view port is still enabled
         if(!view_port_is_enabled(app->view_port)) {
             break;
@@ -175,6 +210,8 @@ int32_t ble_sniffer_app(void* p) {
     }
     
     // Cleanup
+    // TODO: Cleanup UART when implemented
+    
     if(app->current_file) {
         storage_file_close(app->current_file);
         storage_file_free(app->current_file);
