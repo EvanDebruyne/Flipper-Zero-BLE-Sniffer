@@ -1,0 +1,15 @@
+# For details & more options, see documentation/AppManifests.md in firmware repo
+
+App(
+    appid="ble_sniffer",  # Must be unique
+    name="BLE Sniffer",  # Displayed in menus
+    apptype=FlipperAppType.EXTERNAL,
+    entry_point="ble_sniffer_app",
+    stack_size=2 * 1024,
+    fap_category="Tools",
+    fap_version="1.0.0",
+    # fap_icon="ble_sniffer_icon.png",  # 10x10 1-bit PNG - commented out for now
+    fap_description="BLE Sniffer - Capture BLE packets via nRF52840 and save as PCAP files",
+    fap_author="Ethan",
+    fap_weburl="https://github.com/yourusername/Flipper-Zero-BLE-Sniffer",
+)
